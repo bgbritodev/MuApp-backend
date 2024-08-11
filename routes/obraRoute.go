@@ -5,7 +5,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func SetupRoutes(router *mux.Router) {
-	router.HandleFunc("/obras", controllers.CreateObra).Methods("POST")
+// SetupObraRoutes configura as rotas para o controlador de obras
+func SetupObraRoutes(router *mux.Router) {
+	router.HandleFunc("/obras", controllers.CreateObras).Methods("POST")
 	router.HandleFunc("/obras/{id}", controllers.GetObra).Methods("GET")
 }

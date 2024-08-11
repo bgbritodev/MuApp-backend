@@ -19,24 +19,36 @@ func init() {
 	obraCollection = config.Client.Database("MuApp").Collection("Obras")
 }
 
-// CreateObra cria uma nova obra no banco de dados
-func CreateObra(w http.ResponseWriter, r *http.Request) {
-	var obra models.Obra
-	err := json.NewDecoder(r.Body).Decode(&obra)
+// CreateObras cria múltiplas obras no banco de dados
+func CreateObras(w http.ResponseWriter, r *http.Request) {
+	var obras []models.Obra
+	err := json.NewDecoder(r.Body).Decode(&obras)
 	if err != nil {
 		http.Error(w, "Error decoding request body", http.StatusBadRequest)
 		return
 	}
 
-	obra.ID = primitive.NewObjectID()
-	_, err = obraCollection.InsertOne(context.TODO(), obra)
+	for i := range obras {
+		obras[i].ID = primitive.NewObjectID()
+	}
+
+	_, err = obraCollection.InsertMany(context.TODO(), toInterfaceSlice(obras))
 	if err != nil {
-		http.Error(w, "Error inserting obra into database", http.StatusInternalServerError)
+		http.Error(w, "Error inserting obras into database", http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(obra)
+	json.NewEncoder(w).Encode(obras)
+}
+
+// Função auxiliar para converter um slice de structs para um slice de interface{}
+func toInterfaceSlice(obras []models.Obra) []interface{} {
+	var result []interface{}
+	for _, obra := range obras {
+		result = append(result, obra)
+	}
+	return result
 }
 
 // GetObra recupera uma obra específica do banco de dados
