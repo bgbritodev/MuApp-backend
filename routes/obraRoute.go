@@ -9,4 +9,5 @@ import (
 func SetupObraRoutes(router *mux.Router) {
 	router.HandleFunc("/obras", controllers.CreateObras).Methods("POST")
 	router.HandleFunc("/obras/{id}", controllers.GetObra).Methods("GET")
+	router.HandleFunc("/obras/sala/{salaId}", controllers.GetObrasBySalaID).Methods("GET")
 }

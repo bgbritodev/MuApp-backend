@@ -1,0 +1,73 @@
+[
+ {
+  "name": "Amethyst",
+  "autor": "Alphonse Mucha",
+  "audio": "https://drive.google.com/uc?export=download&id=1dry3WIfpklOT8dhdLSON8995o2P8uiR8",
+  "image": "https://raw.githubusercontent.com/bgbritodev/MuApp-backend/main/Medias/Images/Amethyst.jpg",
+  "description": "Amethyst é uma ilustração de Alphonse Mucha que combina elementos art nouveau com uma paleta de cores rica e detalhes ornamentais, destacando a elegância e a beleza feminina."
+},
+{
+  "name": "La Plume",
+  "autor": "Alphonse Mucha",
+  "audio": "https://drive.google.com/uc?export=download&id=1av3K6aUS0YqOZ5W7t3eb9wLJBCMrzUG8",
+  "image": "https://raw.githubusercontent.com/bgbritodev/MuApp-backend/main/Medias/Images/LaPlume.jpg",
+  "description": "La Plume é um cartaz icônico de Mucha, conhecido por suas linhas curvas, motivos florais e letras decorativas, representando o estilo art nouveau em sua forma mais característica."
+}
+{
+  "name": "Zodiac",
+  "autor": "Alphonse Mucha",
+  "audio": "https://drive.google.com/uc?export=download&id=1NTNQ39RVPQjl1B5xJ8GSz-9Sn2IIY9kH",
+  "image": "https://raw.githubusercontent.com/bgbritodev/MuApp-backend/main/Medias/Images/Zodiac.jpg",
+  "description": "Zodiac é uma série de ilustrações de Mucha que representam os signos do zodíaco, combinando simbolismo astrológico com beleza estética e detalhes intricados."
+},
+{
+  "name": "Sarah Bernhardt",
+  "autor": "Alphonse Mucha",
+  "audio": "https://drive.google.com/uc?export=download&id=18McO2hxAhnDye6nus2BYIv7ptK6UaXOl",
+  "image": "https://raw.githubusercontent.com/bgbritodev/MuApp-backend/main/Medias/Images/SarahBernhardt.jpg",
+  "description": "Sarah Bernhardt é um retrato famoso feito por Mucha da atriz francesa, caracterizado pela sua expressão dramática, roupas luxuosas e elementos decorativos característicos do estilo art nouveau."
+},
+{
+  "name": "The Seasons",
+  "autor": "Alphonse Mucha",
+  "audio": "https://drive.google.com/uc?export=download&id=1_iDSziHh3t-VwGY_FyUGlXXeqnP1iBCE",
+  "image": "https://raw.githubusercontent.com/bgbritodev/MuApp-backend/main/Medias/Images/TheSeasons.jpg",
+  "description": "The Seasons é uma série de ilustrações de Mucha que retratam as estações do ano, cada uma com sua própria atmosfera e elementos simbólicos relacionados à natureza e ao ciclo da vida."
+},
+{
+  "name": "Le Pater",
+  "autor": "Alphonse Mucha",
+  "audio": "https://drive.google.com/uc?export=download&id=1jcCue6TM4xZiriTMyqroNeiuOyMOKF62",
+  "image": "https://raw.githubusercontent.com/bgbritodev/MuApp-backend/main/Medias/Images/LePater.jpg",
+  "description": "Le Pater é uma obra mais conceitual de Mucha, explorando temas espirituais e filosóficos com imagens simbólicas e uma composição complexa que convida à reflexão."
+},
+{
+  "name": "Medea",
+  "autor": "Alphonse Mucha",
+  "audio": "https://drive.google.com/uc?export=download&id=1daD-e8lth6KzC44_tniSJaHUG-ueVvwM",
+  "image": "https://raw.githubusercontent.com/bgbritodev/MuApp-backend/main/Medias/Images/Medea.jpg",
+  "description": "Medea é uma ilustração de Mucha inspirada na mitologia grega, retratando a personagem de forma elegante e dramática, com elementos art nouveau característicos."
+},
+{
+  "name": "Dance",
+  "autor": "Alphonse Mucha",
+  "audio": "https://drive.google.com/uc?export=download&id=1Jyr5XgJoDxCgKaI9_0psl4I-CIVoQLg3",
+  "image": "https://raw.githubusercontent.com/bgbritodev/MuApp-backend/main/Medias/Images/Dance.jpg",
+  "description": "Dance é uma pintura de Mucha que captura a graciosidade e a fluidez dos movimentos da dança, com cores suaves e linhas elegantes que representam o movimento."
+},
+{
+  "name": "Fruit",
+  "autor": "Alphonse Mucha",
+  "audio": "https://drive.google.com/uc?export=download&id=1CC7VmxprI1GXGGAp1SEWCcyq0PCKDNO2",
+  "image": "https://raw.githubusercontent.com/bgbritodev/MuApp-backend/main/Medias/Images/Fruit.jpg",
+  "description": "Fruit é uma ilustração de Mucha que destaca a beleza e a variedade das frutas, combinando elementos naturais com um toque de fantasia e ornamentos art nouveau."
+},
+{
+  "name": "Champagne Ruinart",
+  "autor": "Alphonse Mucha",
+  "audio": "https://drive.google.com/uc?export=download&id=1HHe7VWaCsLjOxNm4uf0ygAfaZ-_irr48",
+  "image": "https://raw.githubusercontent.com/bgbritodev/MuApp-backend/main/Medias/Images/ChampagneRuinart.jpg",
+  "description": "Champagne Ruinart é um cartaz publicitário de Mucha para a marca de champanhe, conhecido por sua elegância e sofisticação, com uma composição que destaca o produto de forma atrativa."
+}
+
+]

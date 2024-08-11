@@ -1,22 +1,23 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/bgbritodev/MuApp-backend/config"
 	"github.com/bgbritodev/MuApp-backend/routes"
-	"github.com/gorilla/mux"
 )
 
 func main() {
+	// Conectar ao MongoDB
 	config.Connect()
 
-	r := mux.NewRouter()
-	routes.RegisterRoutes(r)
+	// Configurar o router
+	router := routes.SetupRouter()
 
-	http.Handle("/", r)
-
-	fmt.Println("Server started at http://localhost:8080")
-	http.ListenAndServe(":8080", nil)
+	// Iniciar o servidor
+	log.Println("Server is running on port 8080")
+	if err := http.ListenAndServe(":8080", router); err != nil {
+		log.Fatal(err)
+	}
 }
