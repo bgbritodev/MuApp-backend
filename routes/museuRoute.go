@@ -8,6 +8,7 @@ import (
 func SetupMuseuRoutes(router *mux.Router) {
 	router.HandleFunc("/museus", controllers.CreateMuseu).Methods("POST")
 	router.HandleFunc("/museus/{id}", controllers.GetMuseu).Methods("GET")
+	router.HandleFunc("/allmuseus", controllers.GetAllMuseus).Methods("GET")
 	router.HandleFunc("/museus/{id}", controllers.UpdateMuseu).Methods("PUT")
 	router.HandleFunc("/museus/{id}", controllers.DeleteMuseu).Methods("DELETE")
 }

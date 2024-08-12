@@ -62,6 +62,36 @@ func GetMuseu(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(museu)
 }
 
+func GetAllMuseus(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var museus []models.Museu
+
+	// Buscando todos os museus no MongoDB
+	cursor, err := museuCollection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer cursor.Close(context.TODO())
+
+	for cursor.Next(context.TODO()) {
+		var museu models.Museu
+		if err := cursor.Decode(&museu); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		museus = append(museus, museu)
+	}
+
+	if err := cursor.Err(); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(museus)
+}
+
 // UpdateMuseu atualiza um museu existente no banco de dados
 func UpdateMuseu(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
