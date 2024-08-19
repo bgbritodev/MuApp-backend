@@ -2,13 +2,12 @@ package controllers
 
 import (
 	"context"
-	"encoding/json"
+	//"encoding/json"
 	"log"
-	"net/http"
 
 	"github.com/bgbritodev/MuApp-backend/config"
 	"github.com/bgbritodev/MuApp-backend/models"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -23,54 +22,50 @@ func init() {
 }
 
 // CreateMuseu cria um novo museu no banco de dados
-func CreateMuseu(w http.ResponseWriter, r *http.Request) {
+func CreateMuseu(c *gin.Context) {
 	var museu models.Museu
-	err := json.NewDecoder(r.Body).Decode(&museu)
-	if err != nil {
-		http.Error(w, "Error decoding request body", http.StatusBadRequest)
+	if err := c.ShouldBindJSON(&museu); err != nil {
+		c.JSON(400, gin.H{"error": "Error decoding request body"})
 		return
 	}
 
 	museu.ID = primitive.NewObjectID()
 
-	_, err = museuCollection.InsertOne(context.TODO(), museu)
+	_, err := museuCollection.InsertOne(context.TODO(), museu)
 	if err != nil {
-		http.Error(w, "Error inserting museu into database", http.StatusInternalServerError)
+		c.JSON(500, gin.H{"error": "Error inserting museu into database"})
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(museu)
+	c.JSON(201, museu)
 }
 
 // GetMuseu recupera um museu específico do banco de dados
-func GetMuseu(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+func GetMuseu(c *gin.Context) {
+	id := c.Param("id")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		http.Error(w, "Invalid ID format", http.StatusBadRequest)
+		c.JSON(400, gin.H{"error": "Invalid ID format"})
 		return
 	}
 
 	var museu models.Museu
 	err = museuCollection.FindOne(context.TODO(), bson.M{"_id": objectID}).Decode(&museu)
 	if err != nil {
-		http.Error(w, "Museu not found", http.StatusNotFound)
+		c.JSON(404, gin.H{"error": "Museu not found"})
 		return
 	}
 
-	json.NewEncoder(w).Encode(museu)
+	c.JSON(200, museu)
 }
 
-func GetAllMuseus(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-
+// GetAllMuseus recupera todos os museus do banco de dados
+func GetAllMuseus(c *gin.Context) {
 	var museus []models.Museu
 
-	// Buscando todos os museus no MongoDB
 	cursor, err := museuCollection.Find(context.TODO(), bson.M{})
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 	defer cursor.Close(context.TODO())
@@ -78,33 +73,32 @@ func GetAllMuseus(w http.ResponseWriter, r *http.Request) {
 	for cursor.Next(context.TODO()) {
 		var museu models.Museu
 		if err := cursor.Decode(&museu); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			c.JSON(500, gin.H{"error": err.Error()})
 			return
 		}
 		museus = append(museus, museu)
 	}
 
 	if err := cursor.Err(); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
-	json.NewEncoder(w).Encode(museus)
+	c.JSON(200, museus)
 }
 
 // UpdateMuseu atualiza um museu existente no banco de dados
-func UpdateMuseu(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+func UpdateMuseu(c *gin.Context) {
+	id := c.Param("id")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		http.Error(w, "Invalid ID format", http.StatusBadRequest)
+		c.JSON(400, gin.H{"error": "Invalid ID format"})
 		return
 	}
 
 	var museu models.Museu
-	err = json.NewDecoder(r.Body).Decode(&museu)
-	if err != nil {
-		http.Error(w, "Error decoding request body", http.StatusBadRequest)
+	if err := c.ShouldBindJSON(&museu); err != nil {
+		c.JSON(400, gin.H{"error": "Error decoding request body"})
 		return
 	}
 
@@ -120,27 +114,27 @@ func UpdateMuseu(w http.ResponseWriter, r *http.Request) {
 
 	_, err = museuCollection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
-		http.Error(w, "Error updating museu", http.StatusInternalServerError)
+		c.JSON(500, gin.H{"error": "Error updating museu"})
 		return
 	}
 
-	json.NewEncoder(w).Encode(museu)
+	c.JSON(200, museu)
 }
 
 // DeleteMuseu deleta um museu do banco de dados
-func DeleteMuseu(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+func DeleteMuseu(c *gin.Context) {
+	id := c.Param("id")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		http.Error(w, "Invalid ID format", http.StatusBadRequest)
+		c.JSON(400, gin.H{"error": "Invalid ID format"})
 		return
 	}
 
 	_, err = museuCollection.DeleteOne(context.TODO(), bson.M{"_id": objectID})
 	if err != nil {
-		http.Error(w, "Error deleting museu", http.StatusInternalServerError)
+		c.JSON(500, gin.H{"error": "Error deleting museu"})
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	c.Status(204)
 }

@@ -2,13 +2,13 @@ package controllers
 
 import (
 	"context"
-	"encoding/json"
+	//"encoding/json"
 	"log"
 	"net/http"
 
 	"github.com/bgbritodev/MuApp-backend/config"
 	"github.com/bgbritodev/MuApp-backend/models"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,17 +17,17 @@ import (
 var obraCollection *mongo.Collection
 
 func init() {
-	mongoTestClient := config.Connect()
-	obraCollection = mongoTestClient.Database("MuApp").Collection("Obras")
-	log.Println("Connectado a collection")
+	mongoClient := config.Connect()
+	obraCollection = mongoClient.Database("MuApp").Collection("Obras")
+	log.Println("Conectado à collection de obras")
 }
 
-func CreateObras(w http.ResponseWriter, r *http.Request) {
+// CreateObra cria uma nova obra no banco de dados
+func CreateObra(c *gin.Context) {
 	var obra models.Obra
-	err := json.NewDecoder(r.Body).Decode(&obra)
-	if err != nil {
+	if err := c.BindJSON(&obra); err != nil {
 		log.Printf("Error decoding request body: %v", err)
-		http.Error(w, "Error decoding request body", http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Error decoding request body"})
 		return
 	}
 
@@ -35,60 +35,59 @@ func CreateObras(w http.ResponseWriter, r *http.Request) {
 	obra.ID = primitive.NewObjectID()
 
 	// Inserir a obra no banco de dados
-	_, err = obraCollection.InsertOne(context.TODO(), obra)
+	_, err := obraCollection.InsertOne(context.TODO(), obra)
 	if err != nil {
 		log.Printf("Error inserting obra into database: %v", err)
-		http.Error(w, "Error inserting obra into database", http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error inserting obra into database"})
 		return
 	}
 
 	// Responder com sucesso
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(obra)
+	c.JSON(http.StatusCreated, obra)
 }
 
 // GetObra recupera uma obra específica do banco de dados
-func GetObra(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+func GetObra(c *gin.Context) {
+	id := c.Param("id")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		http.Error(w, "Invalid ID format", http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
 		return
 	}
 
 	var obra models.Obra
 	err = obraCollection.FindOne(context.TODO(), bson.M{"_id": objectID}).Decode(&obra)
 	if err != nil {
-		http.Error(w, "Obra not found", http.StatusNotFound)
+		c.JSON(http.StatusNotFound, gin.H{"error": "Obra not found"})
 		return
 	}
 
-	json.NewEncoder(w).Encode(obra)
+	c.JSON(http.StatusOK, obra)
 }
 
-func GetObrasBySalaID(w http.ResponseWriter, r *http.Request) {
-	salaID := mux.Vars(r)["salaId"]
+// GetObrasBySalaID recupera obras baseadas no ID da sala
+func GetObrasBySalaID(c *gin.Context) {
+	salaID := c.Param("salaId")
 
 	// Consultar o banco de dados por obras que possuem o salaId correspondente
 	filter := bson.M{"salaId": salaID}
 	cursor, err := obraCollection.Find(context.TODO(), filter)
 	if err != nil {
-		http.Error(w, "Error finding obras", http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error finding obras"})
 		return
 	}
 	defer cursor.Close(context.TODO())
 
 	var obras []models.Obra
 	if err = cursor.All(context.TODO(), &obras); err != nil {
-		http.Error(w, "Error decoding obras", http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error decoding obras"})
 		return
 	}
 
 	if len(obras) == 0 {
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode("No obras found for the given SalaID")
+		c.JSON(http.StatusNotFound, gin.H{"message": "No obras found for the given SalaID"})
 		return
 	}
 
-	json.NewEncoder(w).Encode(obras)
+	c.JSON(http.StatusOK, obras)
 }

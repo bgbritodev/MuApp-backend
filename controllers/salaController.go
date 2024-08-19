@@ -2,13 +2,12 @@ package controllers
 
 import (
 	"context"
-	"encoding/json"
 	"log"
 	"net/http"
 
 	"github.com/bgbritodev/MuApp-backend/config"
 	"github.com/bgbritodev/MuApp-backend/models"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -23,12 +22,11 @@ func init() {
 }
 
 // CreateSala cria uma nova sala no banco de dados
-func CreateSala(w http.ResponseWriter, r *http.Request) {
+func CreateSala(c *gin.Context) {
 	var sala models.Sala
-	err := json.NewDecoder(r.Body).Decode(&sala)
-	if err != nil {
+	if err := c.BindJSON(&sala); err != nil {
 		log.Printf("Error decoding request body: %v", err)
-		http.Error(w, "Error decoding request body", http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Error decoding request body"})
 		return
 	}
 
@@ -36,60 +34,59 @@ func CreateSala(w http.ResponseWriter, r *http.Request) {
 	sala.ID = primitive.NewObjectID()
 
 	// Inserir a sala no banco de dados
-	_, err = salaCollection.InsertOne(context.TODO(), sala)
+	_, err := salaCollection.InsertOne(context.TODO(), sala)
 	if err != nil {
 		log.Printf("Error inserting sala into database: %v", err)
-		http.Error(w, "Error inserting sala into database", http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error inserting sala into database"})
 		return
 	}
 
 	// Responder com sucesso
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(sala)
+	c.JSON(http.StatusCreated, sala)
 }
 
 // GetSalasByMuseuID recupera todas as salas de um determinado museu
-func GetSalasByMuseuID(w http.ResponseWriter, r *http.Request) {
-	museuID := mux.Vars(r)["museuId"]
+func GetSalasByMuseuID(c *gin.Context) {
+	museuID := c.Param("museuId")
 
 	// Consultar o banco de dados por salas que possuem o museuId correspondente
 	filter := bson.M{"museuId": museuID}
 	cursor, err := salaCollection.Find(context.TODO(), filter)
 	if err != nil {
-		http.Error(w, "Error finding salas", http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error finding salas"})
 		return
 	}
 	defer cursor.Close(context.TODO())
 
 	var salas []models.Sala
 	if err = cursor.All(context.TODO(), &salas); err != nil {
-		http.Error(w, "Error decoding salas", http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error decoding salas"})
 		return
 	}
 
 	if len(salas) == 0 {
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode("No salas found for the given MuseuID")
+		c.JSON(http.StatusNotFound, gin.H{"message": "No salas found for the given MuseuID"})
 		return
 	}
 
-	json.NewEncoder(w).Encode(salas)
+	c.JSON(http.StatusOK, salas)
 }
 
-func GetSala(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+// GetSala recupera uma sala específica do banco de dados
+func GetSala(c *gin.Context) {
+	id := c.Param("id")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		http.Error(w, "Invalid ID format", http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
 		return
 	}
 
 	var sala models.Sala
 	err = salaCollection.FindOne(context.TODO(), bson.M{"_id": objectID}).Decode(&sala)
 	if err != nil {
-		http.Error(w, "sala not found", http.StatusNotFound)
+		c.JSON(http.StatusNotFound, gin.H{"error": "Sala not found"})
 		return
 	}
 
-	json.NewEncoder(w).Encode(sala)
+	c.JSON(http.StatusOK, sala)
 }
