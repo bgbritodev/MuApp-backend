@@ -63,7 +63,7 @@ func GetMuseu(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllMuseus(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	var museus []models.Museu
 
