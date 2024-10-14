@@ -9,5 +9,6 @@ type Sala struct {
 	Name        string             `bson:"name"`
 	Description string             `bson:"description"`
 	Order       int                `bson:"order"`
+	Image       string             `bson:"image"`
 	MuseuID     string             `bson:"museuId"`
 }
